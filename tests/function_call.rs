@@ -1,5 +1,3 @@
-#![cfg(feature = "function-calling")]
-
 use ollama_rs::{
     generation::chat::ChatMessage,
     generation::functions::tools::{DDGSearcher, Scraper, StockScraper},

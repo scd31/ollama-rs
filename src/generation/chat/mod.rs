@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::Ollama;
 pub mod request;
-use super::images::Image;
+use super::{functions::tools::ToolCall, images::Image};
 use request::ChatMessageRequest;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "chat-history")))]
@@ -228,7 +228,7 @@ impl Ollama {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct ChatMessageResponse {
     /// The name of the model used for the completion.
     pub model: String,
@@ -260,6 +260,8 @@ pub struct ChatMessageFinalResponseData {
 pub struct ChatMessage {
     pub role: MessageRole,
     pub content: String,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub tool_calls: Vec<ToolCall>,
     pub images: Option<Vec<Image>>,
 }
 
@@ -268,6 +270,7 @@ impl ChatMessage {
         Self {
             role,
             content,
+            tool_calls: vec![],
             images: None,
         }
     }

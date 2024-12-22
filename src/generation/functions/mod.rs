@@ -19,14 +19,14 @@ use crate::generation::functions::pipelines::RequestParserBase;
 use crate::generation::functions::tools::Tool;
 use std::sync::Arc;
 
-#[cfg_attr(docsrs, doc(cfg(feature = "function-calling")))]
-#[cfg(feature = "function-calling")]
 impl crate::Ollama {
     fn has_system_prompt(&self, messages: &[ChatMessage], system_prompt: &str) -> bool {
         let system_message = messages.first().unwrap().clone();
         system_message.content == system_prompt
     }
 
+    #[cfg_attr(docsrs, doc(cfg(feature = "chat-history")))]
+    #[cfg(feature = "chat-history")]
     fn has_system_prompt_history(&mut self) -> bool {
         self.get_messages_history("default").is_some()
     }

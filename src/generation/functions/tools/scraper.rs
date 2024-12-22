@@ -46,6 +46,7 @@ impl Tool for Scraper {
         let website = input["website"].as_str().ok_or("Website URL is required")?;
         let client = Client::new();
         let response = client.get(website).send().await?.text().await?;
+        return Ok(response);
 
         let document = Html::parse_document(&response);
         let selector = Selector::parse("p, h1, h2, h3, h4, h5, h6").unwrap();

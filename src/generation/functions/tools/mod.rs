@@ -11,6 +11,7 @@ pub use self::search_ddg::DDGSearcher;
 pub use self::serper::SerperSearchTool;
 
 use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::error::Error;
 use std::string::String;
@@ -60,4 +61,51 @@ pub trait Tool: Send + Sync {
             Err(_) => Value::String(input.to_string()),
         }
     }
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ToolInfo {
+    #[serde(rename = "type")]
+    tool_type: ToolType,
+    function: ToolFunction,
+}
+
+impl ToolInfo {
+    // TODO make this from
+    pub fn new(tool: &dyn Tool) -> Self {
+        Self {
+            tool_type: ToolType::Function,
+            function: ToolFunction {
+                name: tool.name(),
+                description: tool.description(),
+                parameters: tool.parameters(),
+            },
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub enum ToolType {
+    Function,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ToolFunction {
+    name: String,
+    description: String,
+    // Not a fan of `Value`. We should lean on the Rust type system more - TODO
+    // works for now
+    parameters: Value,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ToolCall {
+    pub function: ToolCallFunction,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ToolCallFunction {
+    pub name: String,
+    // TODO see above
+    pub arguments: Value,
 }
